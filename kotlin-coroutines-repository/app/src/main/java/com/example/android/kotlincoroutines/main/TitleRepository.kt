@@ -55,10 +55,10 @@ class TitleRepository(private val network: MainNetwork, private val titleDao: Ti
         Transformations.map(titleDao.loadTitle()) { it?.title }
     }
 
-    suspend fun refreshTitle() {
+    suspend fun refreshTitle() = withContext(Dispatchers.IO) {
         val call = network.fetchNewWelcome()
         val data = call.await()
-        withContext(Dispatchers.IO) { titleDao.insertTitle(Title(data)) }
+        titleDao.insertTitle(Title(data))
     }
 }
 
