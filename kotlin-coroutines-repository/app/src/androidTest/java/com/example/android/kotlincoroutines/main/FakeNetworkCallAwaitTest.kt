@@ -3,6 +3,8 @@ package com.example.android.kotlincoroutines.main
 import com.example.android.kotlincoroutines.main.fakes.makeFailureCall
 import com.example.android.kotlincoroutines.main.fakes.makeSuccessCall
 import com.example.android.kotlincoroutines.util.FakeNetworkException
+import com.google.common.truth.Truth
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
@@ -12,15 +14,27 @@ class FakeNetworkCallAwaitTest {
 
     @Test
     fun whenFakeNetworkCallSuccess_resumeWithResult() {
-        val subject = makeSuccessCall("the title")
+        runBlocking {
+            val subject = makeSuccessCall("the title")
 
-        // TODO: Implement test for await success
+            val result = subject.await()
+
+            Truth.assertThat(result).isEqualTo("the title")
+        }
     }
 
     @Test(expected = FakeNetworkException::class)
     fun whenFakeNetworkCallFailure_throws() {
-        val subject = makeFailureCall(FakeNetworkException("the error"))
+        runBlocking {
+            val subject = makeFailureCall(FakeNetworkException("the error"))
 
-        // TODO: Implement test for await failure
+            try {
+                subject.await()
+                Truth.assert_().fail()
+            } catch (t: Throwable) {
+                Truth.assertThat(t.message == "the error")
+                throw t
+            }
+        }
     }
 }

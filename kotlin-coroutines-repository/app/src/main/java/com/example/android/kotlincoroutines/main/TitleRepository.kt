@@ -68,7 +68,7 @@ class TitleRepository(private val network: MainNetwork, private val titleDao: Ti
  * @return network result after completion
  * @throws Throwable original exception from library if network request fails
  */
-private suspend fun <T> FakeNetworkCall<T>.await(): T {
+suspend fun <T> FakeNetworkCall<T>.await(): T {
     return suspendCoroutine { continuation ->
         addOnResultListener { result: FakeNetworkResult<T> ->
             when (result) {
